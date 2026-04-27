@@ -1,7 +1,5 @@
 Rails.application.routes.draw do
-  get 'words/index'
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
-
-  # Defines the root path route ("/")
-  # root "articles#index"
+   root 'words#index'
+  resources :words, only: [:index, :create]
 end
+

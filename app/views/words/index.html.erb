@@ -1,2 +1,36 @@
-<h1>Words#index</h1>
-<p>Find me in app/views/words/index.html.erb</p>
+<!-- app/views/words/index.html.erb -->
+<h1>しりとりゲーム</h1>
+ <p>平仮名とカタカナの相互関係には対応していません。</p>
+ <p>濁点でおわる文字は、濁点で始まる言葉のみ可</p>
+
+<% if Word.count >= 10 %>
+  <p style="color: green; font-size: 24px;">🎉 おめでとうございます！10個つながりました！ 🎉</p>
+<% end %>
+
+<h2>これまでの単語</h2>
+<ul>
+  <% @words.each do |word| %>
+    <li><%= word.position %>. <%= word.content %></li>
+  <% end %>
+</ul>
+
+<h2>次の単語を入力</h2>
+<% if @words.any? %>
+  <p>「<%= @words.last.content[-1] %>」で始まる単語を入力してください</p>
+<% end %>
+
+<%= form_with model: @word, url: words_path, local: true do |f| %>
+  <% if @word.errors.any? %>
+    <div style="color: red;">
+      <h3>エラーがあります：</h3>
+      <ul>
+        <% @word.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <%= f.text_field :content, placeholder: '単語を入力' %>
+  <%= f.submit '送信' %>
+<% end %>
