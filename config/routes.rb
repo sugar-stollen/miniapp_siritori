@@ -1,5 +1,9 @@
 Rails.application.routes.draw do
-   root 'words#index'
-  resources :words, only: [:index, :create]
+    resources :words do
+    collection do
+      delete :reset  # リセット機能用
+    end
+  end
+  
+  root 'words#index'  # トップページの設定
 end
-
