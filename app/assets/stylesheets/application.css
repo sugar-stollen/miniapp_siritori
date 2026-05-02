@@ -13,3 +13,20 @@
  *= require_tree .
  *= require_self
  */
+.flash-notice {
+  color: green;
+  margin-bottom: 20px;
+  border: 2px solid green;
+  padding: 10px;
+  background-color: #d4edda; /* 薄い緑色の背景 */
+  border-radius: 5px; /* 角を丸くする */
+}
+
+.flash-alert {
+  color: red;
+  margin-bottom: 20px;
+  border: 2px solid red;
+  padding: 10px;
+  background-color: #f8d7da; /* 薄い赤色の背景 */
+  border-radius: 5px;
+}

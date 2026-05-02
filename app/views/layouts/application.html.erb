@@ -11,6 +11,19 @@
   </head>
 
   <body>
+    <!-- フラッシュメッセージの表示（ここだけに記述） -->
+    <% if flash[:notice] %>
+      <div style="color: green; margin-bottom: 20px; border: 2px solid green; padding: 10px; background-color: #d4edda; border-radius: 5px;">
+        <%= flash[:notice] %>
+      </div>
+    <% end %>
+
+    <% if flash[:alert] %>
+      <div style="color: red; margin-bottom: 20px; border: 2px solid red; padding: 10px; background-color: #f8d7da; border-radius: 5px;">
+        <%= flash[:alert] %>
+      </div>
+    <% end %>
+    
     <%= yield %>
   </body>
 </html>

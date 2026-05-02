@@ -1,36 +1,65 @@
-<!-- app/views/words/index.html.erb -->
 <h1>しりとりゲーム</h1>
- <p>平仮名とカタカナの相互関係には対応していません。</p>
- <p>濁点でおわる文字は、濁点で始まる言葉のみ可</p>
+<p> 一文字につき10点加算されます。</p>
+<p>10個の単語でなるべく多くの得点をめざそう</p>
 
-<% if Word.count >= 10 %>
-  <p style="color: green; font-size: 24px;">🎉 おめでとうございます！10個つながりました！ 🎉</p>
-<% end %>
+  <!-- スコア表示 -->
+  <div class="score-board">
+    <p>総スコア: <%= @total_score %>点</p>
+    <p>単語数: <%= @words.count %> / 10</p>
+  </div>
 
-<h2>これまでの単語</h2>
-<ul>
-  <% @words.each do |word| %>
-    <li><%= word.position %>. <%= word.content %></li>
-  <% end %>
-</ul>
-
-<h2>次の単語を入力</h2>
 <% if @words.any? %>
-  <p>「<%= @words.last.content[-1] %>」で始まる単語を入力してください</p>
+  <div style="margin-bottom: 20px;">
+    <p>最後の単語：<strong><%= @words.last.content %></strong></p>
+    <p style="color: #0066cc; font-size: 18px; font-weight: bold;">
+      次は「<%= @words.last.last_char_for_shiritori %>」で始まる単語を入力してください
+    </p>
+  </div>
 <% end %>
 
-<%= form_with model: @word, url: words_path, local: true do |f| %>
-  <% if @word.errors.any? %>
-    <div style="color: red;">
-      <h3>エラーがあります：</h3>
-      <ul>
-        <% @word.errors.full_messages.each do |message| %>
-          <li><%= message %></li>
-        <% end %>
-      </ul>
-    </div>
-  <% end %>
+  <%# フラッシュメッセージの表示は無し %>
 
-  <%= f.text_field :content, placeholder: '単語を入力' %>
-  <%= f.submit '送信' %>
+<%# エラーメッセージの表示 %>
+<% if @word.errors&.any? %>
+  <div style="color: red; margin-bottom: 20px; border: 2px solid red; padding: 10px;">
+    <h3>エラーが発生しました：</h3>
+    <ul>
+      <% @word.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  </div>
 <% end %>
+
+
+  <!-- 単語リスト -->
+  <div class="words-list">
+    <% @words.each_with_index do |word, index| %>
+      <div class="word-item">
+        <span><%= index + 1 %>.</span>
+        <span><%= word.content %></span>
+      </div>
+    <% end %>
+  </div>
+  
+  <!-- 入力フォーム -->
+<%= form_with model: [@game, @word], url: words_path, local: true do |f| %>
+  <%= f.text_field :content, placeholder: "単語を入力" %>
+  <%= f.submit "追加" %>
+<% end %>
+  
+<!-- 10個達成メッセージ -->
+<% if @words.count >= 10 %>
+  <div class="congratulations">
+    <p>Congratulations！</p>
+    <%= button_to 'もう一度遊ぶ', reset_words_path, method: :delete, class: 'reset-button' %>
+  </div>
+<% end %>
+
+
+  <!-- リセットボタン -->
+  <%= button_to 'リセット', reset_words_path, method: :delete, 
+      data: { confirm: '本当にリセットしますか？' } %>
+</div>
+
+
