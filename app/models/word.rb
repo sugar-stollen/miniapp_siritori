@@ -2,6 +2,7 @@ class Word < ApplicationRecord
   belongs_to :game  # ゲームとの関連付け
 
   # バリデーション（データのルール）
+  validate :game_not_finished
   validate :starts_with_last_character  # 前の文字と繋がっているかチェック
   validate :does_not_end_with_n         # 「ん」で終わっていないかチェック
   validates :content, presence: true, uniqueness: { message: 'この単語はすでに使われています' }       #同じ単語を使えないようにする
@@ -18,7 +19,16 @@ class Word < ApplicationRecord
   before_create :calculate_score
   
   private
-  
+   # ゲームが終了していないかチェック
+  def game_not_finished
+    return if game.nil?
+    
+    # 10単語に達している場合はエラー
+    if game.words.count >= 10
+      errors.add(:base, '10単語入力済みです。「もう一度遊ぶ」を押してね')
+    end
+
+
   # しりとりのルール：前の単語の最後の文字で始まっているかチェック
   def starts_with_last_character
     return if game.words.count.zero?  # そのゲームの最初の単語ならチェック不要
@@ -96,4 +106,5 @@ class Word < ApplicationRecord
     base_score = content.length * 10
     self.score = base_score
   end
+end
 end
