@@ -13,7 +13,56 @@
  *= require_tree .
  *= require_self
  */
-.flash-notice {
+
+body {
+  margin: 0;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  background-color: #f5f5f5;
+}
+
+/* 中央配置のコンテナ */
+.container {
+  max-width: 600px;  /* 最大幅を指定 */
+  margin: 0 auto;    /* 左右のmarginをautoにして中央配置 */
+  padding: 30px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.score-board {
+  background-color: #f0f8ff;
+  border: 2px solid #4a90e2;
+  border-radius: 8px;
+  padding: 15px;
+  margin: 15px 0;
+  text-align: center;
+}
+
+.score-board p {
+  margin: 3px 0;
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+}
+
+/* 見出しのスタイル */
+h1 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+/* 説明文のスタイル */
+p {
+  text-align: center;
+  color: #666;
+  margin: 5px 0;
+}
+
+
+ .flash-notice {
   color: green;
   margin-bottom: 20px;
   border: 2px solid green;
@@ -30,3 +79,46 @@
   background-color: #f8d7da; /* 薄い赤色の背景 */
   border-radius: 5px;
 }
+
+.words-list {
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
+   margin: 25px auto;  /* 上下20px、左右auto で中央揃え */
+  max-width: 500px;  /* 600px → 500px に変更 */
+  width: 90%;  /* レスポンシブ対応 */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.word-item {
+  padding: 6px 12px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  gap: 10px;
+  align-items: center;  /* 縦方向の中央揃え */
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.word-item:last-child {
+  border-bottom: none;  /* 最後の要素は下線なし */
+}
+
+.word-item span:first-child {
+  /* 番号部分 */
+  font-weight: bold;
+  color: #666;
+  min-width: 25px;
+  text-align: right;
+  font-size: 13px;
+}
+
+.word-item span:last-child {
+  /* 単語部分 */
+  font-size: 15px;
+  color: #333;
+  flex: 1;
+  font-weight: 500;
+}
+
