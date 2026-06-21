@@ -1,24 +1,44 @@
-# README
+# しりとりゲーム
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+公開URL: <https://siritori-game-9x3o.onrender.com/>
 
-Things you may want to cover:
+10個の単語でしりとりをして文字数でスコアを稼ぐミニゲームです。
+単語の整合性や検索機能は無いため、検証はできません。
+通常のしりとりと同様に前の単語の最後の文字で次の単語を入力してください。
+「ん」で終わる単語は入力できないようにしています。
 
-* Ruby version
 
-* System dependencies
+たくさんのフィードバックありがとうございます。
+表示されるメッセージのうち、最後が「－」の際、「次は「－」で始まる単語を入力」と表示されてしまいますが、一文字前の文字で判定されます。
 
-* Configuration
+## 主な機能
 
-* Database creation
+- 直前に入力した文字の最後も文字から次の単語が始まるようにvalidationを組んで入力規則を作成しました。
 
-* Database initialization
+## 気に入っているところ
 
-* How to run the test suite
+- 通常のしりとりでは永遠にゲームが続いてしまうので、加点方式のゲームルールにしたこと。
 
-* Services (job queues, cache servers, search engines, etc.)
 
-* Deployment instructions
+## 技術選定
 
-* ...
+
+
+## 技術的な特徴
+
+
+
+## 今後の発展案
+
+- Xへのシェア機能の追加
+- 入力文字言語の制限
+- 漢字に対するルールの判定
+- nextメッセージの修正
+- 新ルール（文字数超過強制）による難易度上昇
+- ランキングシステムトップ５の追加
+- 前回の自身の記録を表示させる
+- 制限時間の実装
+
+
+
+

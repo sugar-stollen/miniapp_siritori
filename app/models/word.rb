@@ -5,29 +5,27 @@ class Word < ApplicationRecord
   validate :game_not_finished
   validate :starts_with_last_character  # 前の文字と繋がっているかチェック
   validate :does_not_end_with_n         # 「ん」で終わっていないかチェック
-  validates :content, presence: true, uniqueness: { message: 'この単語はすでに使われています' }       #同じ単語を使えないようにする
- 
+  validate :only_japanese_kana          #ひらがな・カタカナのみ入力可能
+  validates :content, presence: true, uniqueness: { message: 'この単語はすでに使われています' } 
+   #同じ単語を使えないようにする
+   # スコア計算などのメソッド
+  before_create :calculate_score
   
   # しりとりの次の文字を取得するメソッド（小文字を大文字に変換）
   def last_char_for_shiritori
-    last_char = content[-1]
-    
+    content[-1]
   end
-
-  
-  # スコア計算などのメソッド
-  before_create :calculate_score
-  
+    
   private
    # ゲームが終了していないかチェック
   def game_not_finished
-    return if game.nil?
+   return if game.nil?
     
     # 10単語に達している場合はエラー
     if game.words.count >= 10
       errors.add(:base, '10単語入力済みです。「もう一度遊ぶ」を押してね')
     end
-
+  end
 
   # しりとりのルール：前の単語の最後の文字で始まっているかチェック
   def starts_with_last_character
@@ -42,7 +40,16 @@ class Word < ApplicationRecord
       errors.add(:content, "前の単語の最後の文字（#{last_char}）で始めてください")
     end
   end
-  
+
+   # ひらがな・カタカナのみ許可
+  def only_japanese_kana
+   return if content.blank?
+
+    unless content.match?(/\A[ぁ-んァ-ヶー]+\z/)
+    errors.add(:content, 'ひらがな・カタカナのみ入力できます')
+    end
+  end
+
   # しりとりのルール：「ん」で終わる単語は使えない
   def does_not_end_with_n
     return if content.blank?
@@ -101,10 +108,9 @@ class Word < ApplicationRecord
   end
   
 
-  def calculate_score
-    # スコア計算（後で追加する場合）
-    base_score = content.length * 10
-    self.score = base_score
-  end
-end
+    def calculate_score
+       # スコア計算（後で追加する場合）
+       base_score = content.length * 10
+       self.score = base_score
+    end
 end
