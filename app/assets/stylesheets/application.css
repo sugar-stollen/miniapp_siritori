@@ -122,3 +122,24 @@ p {
   font-weight: 500;
 }
 
+.congratulations {
+  position: relative;
+}
+/* ↑ 親要素（Congratulations）を基準にする */
+.share-button {
+  position: absolute;
+  /* ↑ ボタンを自由配置 */
+  right: 20px;
+  /* 右から20px */
+  bottom: 20px;
+  /* 下から20px */
+
+  display: inline-block;
+  padding: 10px 20px;
+
+  background: black;
+  color: white;
+
+  text-decoration: none;
+  border-radius: 8px;
+}
