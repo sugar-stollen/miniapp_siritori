@@ -12,9 +12,9 @@ class Word < ApplicationRecord
   before_create :calculate_score
   
   # しりとりの次の文字を取得するメソッド（小文字を大文字に変換）
-  def last_char_for_shiritori
-    content[-1]
-  end
+   def last_char_for_shiritori
+     get_last_char_for_shiritori(content)
+   end
     
   private
    # ゲームが終了していないかチェック
@@ -48,6 +48,11 @@ class Word < ApplicationRecord
     unless content.match?(/\A[ぁ-んァ-ヶー]+\z/)
     errors.add(:content, 'ひらがな・カタカナのみ入力できます')
     end
+
+  # 伸ばし棒の連続禁止
+   if content.include?('ーー')
+    errors.add(:content, '伸ばし棒「ー」は連続して入力できません')
+   end
   end
 
   # しりとりのルール：「ん」で終わる単語は使えない
