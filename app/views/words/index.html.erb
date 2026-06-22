@@ -63,8 +63,18 @@
 <!-- 10個達成メッセージ -->
 <% if @words.count >= 10 %>
   <div class="congratulations">
-    <p>Congratulations！</p>
-    <%= button_to 'もう一度遊ぶ', reset_words_path, method: :delete, class: 'reset-button' %>
+    <p>Congratulations！　　総スコア：<%= @total_score %>点</p>
+
+    <%= link_to 'Xでシェア',
+          x_share_url(@total_score),
+          target: '_blank',
+          rel: 'noopener',
+          class: 'share-button' %>
+
+    <%= button_to 'もう一度遊ぶ',
+          reset_words_path,
+          method: :delete,
+          class: 'reset-button' %>
   </div>
 <% end %>
 
