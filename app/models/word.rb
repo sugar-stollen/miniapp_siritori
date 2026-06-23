@@ -6,10 +6,25 @@ class Word < ApplicationRecord
   validate :starts_with_last_character  # 前の文字と繋がっているかチェック
   validate :does_not_end_with_n         # 「ん」で終わっていないかチェック
   validate :only_japanese_kana          #ひらがな・カタカナのみ入力可能
+  validate :starts_with_random_char     # 開始文字をランダム指定
+
   validates :content, presence: true, uniqueness: { message: 'この単語はすでに使われています' } 
    #同じ単語を使えないようにする
    # スコア計算などのメソッド
   before_create :calculate_score
+
+  #  開始文字のランダム指定ルールを呼び出し
+  def starts_with_random_char
+    return unless game.start_random?
+    return unless game.words.empty?
+    
+    unless normalize_character(content[0]) == game.start_char
+      errors.add(
+        :content,
+        "最初の文字は「#{game.start_char}」！"
+        )
+    end
+  end
   
   # しりとりの次の文字を取得するメソッド（小文字を大文字に変換）
    def last_char_for_shiritori
