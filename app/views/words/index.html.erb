@@ -4,12 +4,30 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>しりとりゲーム</title>
+  <title>しりとりゲーム ver.2</title>
   <%= stylesheet_link_tag 'application', media: 'all' %>
 </head>
-<body>
+<body> 
   <div class="container">
-  <h1>しりとりゲーム ver.2 </h1>
+    <div class="game-header">
+
+  <h1>しりとりゲーム ver.2</h1>
+
+  <% if @game.persisted? %>
+    <div class="rule-mini">
+
+      <% if @game.start_random? %>
+        <span>開始文字ランダム　ON</span>
+      <% end %>
+
+      <% if @game.longer_word? %>
+        <span>前の単語より長い単語　ON</span>
+      <% end %>
+
+    </div>
+  <% end %>
+
+</div>
   <p> 一文字につき10点加算されます。</p>
   <p>10個の単語でなるべく多くの得点をめざそう</p>
 
@@ -28,6 +46,11 @@
     <p style="color: #0066cc; font-size: 18px; font-weight: bold;">
       次は「<%= @words.last.last_char_for_shiritori %>」で始まる単語を入力してください
     </p>
+  <% if @game.longer_word? %>
+  <p style="color: green;">
+    <%= @words.last.content.length + 1 %>文字以上で入力してください
+  </p>
+  <% end %>
   </div>
 <% end %>
 
@@ -57,7 +80,7 @@
   </div>
   
 <!-- 入力フォーム（10単語未満の場合のみ表示） -->
-<% if @words.empty? %>
+<% unless @game.persisted? %>
 
   <%= form_with url: start_game_words_path, local: true do %>
 
@@ -76,7 +99,6 @@
   <% end %>
 
 <% end %>
-
 
 <!-- ゲーム開始後だけ入力表示 -->
 <% if @game.persisted? && @words.count < 10 %>

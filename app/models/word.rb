@@ -7,79 +7,109 @@ class Word < ApplicationRecord
   validate :does_not_end_with_n         # 「ん」で終わっていないかチェック
   validate :only_japanese_kana          #ひらがな・カタカナのみ入力可能
   validate :starts_with_random_char     # 開始文字をランダム指定
+  validate :must_be_longer_than_previous # 前の文字よりも長い単語指定
 
   validates :content, presence: true, uniqueness: { message: 'この単語はすでに使われています' } 
    #同じ単語を使えないようにする
    # スコア計算などのメソッド
   before_create :calculate_score
 
-  #  開始文字のランダム指定ルールを呼び出し
-  def starts_with_random_char
-    return unless game.start_random?
-    return unless game.words.empty?
-    
-    unless normalize_character(content[0]) == game.start_char
-      errors.add(
-        :content,
-        "最初の文字は「#{game.start_char}」！"
-        )
-    end
-  end
-  
   # しりとりの次の文字を取得するメソッド（小文字を大文字に変換）
    def last_char_for_shiritori
      get_last_char_for_shiritori(content)
    end
     
   private
-   # ゲームが終了していないかチェック
-  def game_not_finished
-   return if game.nil?
-    
-    # 10単語に達している場合はエラー
-    if game.words.count >= 10
-      errors.add(:base, '10単語入力済みです。「もう一度遊ぶ」を押してね')
-    end
-  end
 
-  # しりとりのルール：前の単語の最後の文字で始まっているかチェック
-  def starts_with_last_character
+     # 開始文字のランダム指定ルール
+   def starts_with_random_char
+      return if game.nil?
+      return unless game.start_random?
+      return unless game.words.count.zero?
+
+      first_char = normalize_character(content[0])
+      start_char = normalize_character(game.start_char)
+
+      unless first_char == start_char
+        errors.add(
+          :content,
+          "最初の単語は「#{game.start_char}」から始めてください"
+        )
+      end
+   end
+
+
+     # 前の単語より長い単語指定ルール
+   def must_be_longer_than_previous
+    return if game.nil?
+    return unless game.longer_word?
+
+     # 最初の単語は対象外
+    return if game.words.count.zero?
+
+    previous_word = game.words.order(created_at: :desc).first
+
+    if content.length <= previous_word.content.length
+      errors.add(
+        :content,"#{previous_word.content.length}文字より長い単語を入力してください"
+        )
+    end
+   end
+
+     # ゲームが終了していないかチェック
+   def game_not_finished
+     return if game.nil?
+    
+       # 10単語に達している場合はエラー
+     if game.words.count >= 10
+      errors.add(:base, '10単語入力済みです。「もう一度遊ぶ」を押してね'
+      )
+     end
+     
+   end
+
+   # しりとりのルール：前の単語の最後の文字で始まっているかチェック
+   def starts_with_last_character
     return if game.words.count.zero?  # そのゲームの最初の単語ならチェック不要
     
     last_word = game.words.order(created_at: :desc).first
     current_first = normalize_character(content[0])
     #伸ばし棒と小文字のルールついか
     last_char = get_last_char_for_shiritori(last_word.content)
-    
+   
     unless current_first == last_char
       errors.add(:content, "前の単語の最後の文字（#{last_char}）で始めてください")
     end
-  end
+   end
 
    # ひらがな・カタカナのみ許可
-  def only_japanese_kana
-   return if content.blank?
+   def only_japanese_kana
+     return if content.blank?
 
-    unless content.match?(/\A[ぁ-んァ-ヶー]+\z/)
-    errors.add(:content, 'ひらがな・カタカナのみ入力できます')
-    end
+     unless content.match?(/\A[ぁ-んァ-ヶー]+\z/)
+      errors.add(:content, 'ひらがな・カタカナのみ入力できます')
+     end
 
-  # 伸ばし棒の連続禁止
-   if content.include?('ーー')
-    errors.add(:content, '伸ばし棒「ー」は連続して入力できません')
+     # 伸ばし棒の連続禁止
+     if content.include?('ーー')
+         errors.add(
+          :content, '伸ばし棒「ー」は連続して入力できません'
+          )
+     end
    end
-  end
 
-  # しりとりのルール：「ん」で終わる単語は使えない
-  def does_not_end_with_n
+     # しりとりのルール：「ん」で終わる単語は使えない
+   def does_not_end_with_n
     return if content.blank?
     last_char = content[-1]
     
-    # カタカナの「ン」もチェック
+     # カタカナの「ン」もチェック
     if last_char == 'ん' || last_char == 'ン'
-      errors.add(:content, "「ん」で終わる単語は使えません")
+      errors.add(
+        :content, "「ん」で終わる単語は使えません"
+        )
     end
-  end
+   end
 
     # 伸ばし棒と小文字のルールを適用して、しりとりで使う最後の文字を取得
   def get_last_char_for_shiritori(word)
@@ -87,7 +117,7 @@ class Word < ApplicationRecord
     
     last_char = word[-1]
     
-    # 最後の文字が伸ばし棒なら、一文字前を使う
+     # 最後の文字が伸ばし棒なら、一文字前を使う
     if last_char == 'ー'
       # 一文字前が存在する場合はそれを使う、なければ伸ばし棒をそのまま使う
       last_char = word[-2] if word.length >= 2
@@ -128,9 +158,10 @@ class Word < ApplicationRecord
   end
   
 
-    def calculate_score
-       # スコア計算（後で追加する場合）
-       base_score = content.length * 10
-       self.score = base_score
-    end
+  def calculate_score
+      # スコア計算（後で追加する場合）
+      base_score = content.length * 10
+      self.score = base_score
+  end
+
 end
